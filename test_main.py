@@ -1,6 +1,6 @@
 import pytest
 
-from main import is_email_valid, is_password_valid
+from main import hash_password, is_email_valid, is_password_valid, verify_password
 
 
 @pytest.mark.parametrize(
@@ -42,4 +42,26 @@ def test_password_rules(password, expected, deskripsi_sqa):
     result = is_password_valid(password)
 
     assert result == expected, f"Gagal pada skenario: {deskripsi_sqa}"
+
+
+def test_password_hashing():
+    raw_password = "ValidPass123"
+    hashed = hash_password(raw_password)
+
+    # Acceptance Criteria 1: Hasil hash tidak boleh sama dengan password asli
+    assert hashed != raw_password, "Hash password tidak boleh sama dengan plain text"
+    assert len(hashed) > 0, "Hash password tidak boleh kosong"
+
+
+def test_password_verification():
+    raw_password = "ValidPass123"
+    wrong_password = "WrongPassword123"
+    hashed = hash_password(raw_password)
+
+    # Acceptance Criteria 2: verify_password True untuk password asli & hash-nya
+    assert verify_password(raw_password, hashed) is True, "verifikasi password asli harus True"
+
+    # Acceptance Criteria 3: verify_password False untuk password yang salah
+    assert verify_password(wrong_password, hashed) is False, "verifikasi password salah harus False"
+
 
